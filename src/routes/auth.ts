@@ -76,7 +76,7 @@ route.post("/login", async (req: any, res: any, next) => {
             })
         }
 
-        respond(res, req, 200, "Login successful", { jwt: jwttoken });
+        respond(res, req, 200, "Login successful", { jwt: jwttoken, picture: user_google_object.picture });
     }
 
     catch (err) {
