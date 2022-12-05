@@ -4,7 +4,7 @@ import express from "express"
 import { respond } from "../lib/request-response";
 import * as ERROR from "../lib/errors";
 import jwt_decode from "jwt-decode";
-import { GoogleJWT } from "../../types";
+import { GoogleJWT } from "../types";
 
 const route = express();
 var jwt = require('jsonwebtoken');
