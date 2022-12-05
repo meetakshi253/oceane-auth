@@ -12,10 +12,11 @@ datasource db {
 }
 
 model User {
-  id     String      @id @default(uuid())
-  email  String      @unique
-  name   String
-  tokens JwtTokens[]
+  id      String      @id @default(uuid())
+  email   String      @unique
+  name    String
+  picture String?
+  tokens  JwtTokens[]
 }
 
 model JwtTokens {

@@ -3,6 +3,8 @@ import prisma from "../prisma"
 import express from "express"
 import { respond } from "../lib/request-response";
 import * as ERROR from "../lib/errors";
+import jwt_decode from "jwt-decode";
+import { GoogleJWT } from "../../types";
 
 const route = express();
 var jwt = require('jsonwebtoken');
@@ -15,10 +17,13 @@ function createJwt(id: User["id"]) {
 
 route.post("/login", async (req: any, res: any, next) => {
     const { value, error } = req.body;
-    if (!value || !value.email || !value.name) {
+    if (!value || !value.google_jwt) {
         respond(res, req, 400, ERROR.BAD_INPUT);
         return;
     }
+
+    const user_google_object: GoogleJWT = jwt_decode(value.google_jwt)
+    console.log(user_google_object)
 
     //first check if the user exists, if not, create the user and return jwt token
     let user: User | null;
@@ -26,7 +31,7 @@ route.post("/login", async (req: any, res: any, next) => {
         let jwttoken = null;
         user = await prisma.user.findUnique({
             where: {
-                email: value.email
+                email: user_google_object.email
             }
         })
 
@@ -54,8 +59,9 @@ route.post("/login", async (req: any, res: any, next) => {
         if (!user) {
             user = await prisma.user.create({
                 data: {
-                    email: value.email,
-                    name: value.name
+                    email: user_google_object.email,
+                    name: user_google_object.name,
+                    picture: user_google_object.picture,
                 }
             })
         }
