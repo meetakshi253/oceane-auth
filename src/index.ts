@@ -2,8 +2,8 @@ import "dotenv/config";
 import express, { Request } from "express";
 import { json } from "body-parser";
 import { respond } from "./lib/request-response";
-import cors from "cors";
 import auth from "./routes/auth";
+import cors from "cors";
 
 const app = express();
 

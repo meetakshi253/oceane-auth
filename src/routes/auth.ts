@@ -4,14 +4,14 @@ import express from "express";
 import { respond } from "../lib/request-response";
 import * as ERROR from "../lib/errors";
 import jwt_decode from "jwt-decode";
-import { GoogleJWT } from "../../types";
+import { GoogleJWT } from "../types";
 
 const route = express();
 var jwt = require("jsonwebtoken");
 
 function createJwt(id: User["id"]) {
-	return jwt.sign({ id }, process.env.JWT_SECRET, {
-		expiresIn: 24 * 60 * 60,
+	return jwt.sign({ userid: id }, process.env.JWT_SECRET, {
+		expiresIn: 10 * 365 * 24 * 60 * 60,
 	});
 }
 
@@ -47,6 +47,7 @@ route.post("/login", async (req: any, res: any, next) => {
 					jwttoken,
 					process.env.JWT_SECRET,
 					function (err: any, decoded: any) {
+						console.log(decoded);
 						if (err) {
 							jwttoken = createJwt(token.userId);
 							prisma.jwtTokens.update({
@@ -80,13 +81,47 @@ route.post("/login", async (req: any, res: any, next) => {
 			});
 		}
 
-		respond(res, req, 200, "Login successful", { jwt: jwttoken });
+		respond(res, req, 200, "Login successful", {
+			jwt: jwttoken,
+			picture: user_google_object.picture,
+			username: user.name,
+			email: user.email,
+		});
 	} catch (err) {
 		console.log(err);
 		if (!value.email) {
 			respond(res, req, 500, ERROR.INTERNAL_ERROR);
 		}
 		return;
+	}
+});
+
+route.get("/user", async (req: any, res: any, next) => {
+	const bearer_header = req.headers["authorization"];
+	if (typeof bearer_header !== undefined) {
+		const bearer_token = bearer_header.split(" ")[1];
+		req.token = bearer_token;
+
+		//fetch user from database corresponding to the token
+		let user: any;
+		try {
+			user = await prisma.jwtTokens.findFirst({
+				where: { token: bearer_token },
+				select: { user: true },
+			});
+
+			user
+				? respond(res, req, 200, "Fetched user details successfully", {
+						username: user.name,
+						email: user.email,
+						picture: user.picture,
+				  })
+				: respond(res, req, 400, ERROR.BAD_REQUEST);
+		} catch (err) {
+			respond(res, req, 500, ERROR.INTERNAL_ERROR);
+		}
+	} else {
+		respond(res, req, 400, ERROR.BAD_REQUEST);
 	}
 });
 
