@@ -3,18 +3,19 @@ import express, { Request } from "express";
 import { json } from "body-parser";
 import { respond } from "./lib/request-response";
 import auth from "./routes/auth";
+import cors from "cors";
 
 const app = express();
 
 //app.set("trust proxy", true);
 
-// app.use(
-//     cors({
-//       origin: [process.env.CLIENT_ORIGIN],
-//       methods: "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS",
-//       credentials: true,
-//     })
-//   );
+app.use(
+    cors({
+        origin: process.env.CLIENT_ORIGIN,
+        methods: "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS",
+        credentials: true,
+    })
+);
 
 const parseJson = json({ limit: "1mb" });
 app.use((req, res, next) =>
