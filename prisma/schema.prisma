@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,8 +19,39 @@ model User {
 model JwtTokens {
   id     String @id @default(uuid())
   token  String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
   @@index([userId])
+}
+
+model Image {
+  id        String        @id @unique @default(uuid())
+  userId    String
+  name      String
+  metadata  Json
+  location  String
+  createdAt DateTime      @default(now()) //upload time
+  s3Url     String
+  albums    AlbumImages[]
+}
+
+model Album {
+  id           String        @id @unique @default(uuid())
+  userId       String
+  name         String
+  createdAt    DateTime      @default(now())
+  coverPicture String //s3 url
+  images       AlbumImages[]
+}
+
+model AlbumImages {
+  albumId String
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  imageId String
+  image   Image  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([albumId, imageId]) //composite primary key
+  @@index([albumId])
+  @@index([imageId])
 }
