@@ -109,7 +109,7 @@ route.get("/user", async (req: any, res: any, next) => {
 				where: { token: bearer_token },
 				select: { user: true },
 			});
-            user = user.user
+            user = user.user;
             
 			user
 				? respond(res, req, 200, "Fetched user details successfully", {
