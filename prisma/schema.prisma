@@ -32,17 +32,17 @@ model Image {
   metadata  Json
   location  String
   createdAt DateTime      @default(now()) //upload time
-  s3Url     String
+  fileName  String
   albums    AlbumImages[]
 }
 
 model Album {
-  id           String        @id @unique @default(uuid())
-  userId       String
-  name         String
-  createdAt    DateTime      @default(now())
-  coverPicture String //s3 url
-  images       AlbumImages[]
+  id        String        @id @unique @default(uuid())
+  userId    String
+  name      String
+  createdAt DateTime      @default(now())
+  cover     String //s3 url
+  images    AlbumImages[]
 }
 
 model AlbumImages {

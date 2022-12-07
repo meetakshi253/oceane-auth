@@ -23,7 +23,7 @@ route.post("/login", async (req: any, res: any, next) => {
 	}
 
 	const user_google_object: GoogleJWT = jwt_decode(value.google_jwt);
-	console.log(user_google_object);
+	console.log("Google JWT", user_google_object);
 
 	//first check if the user exists, if not, create the user and return jwt token
 	let user: User | null;
@@ -47,7 +47,7 @@ route.post("/login", async (req: any, res: any, next) => {
 					jwttoken,
 					process.env.JWT_SECRET,
 					function (err: any, decoded: any) {
-						console.log(decoded);
+						console.log("decoded", decoded);
 						if (err) {
 							jwttoken = createJwt(token.userId);
 							prisma.jwtTokens.update({
@@ -88,7 +88,7 @@ route.post("/login", async (req: any, res: any, next) => {
 			email: user.email,
 		});
 	} catch (err) {
-		console.log(err);
+		console.log("error", err);
 		if (!value.email) {
 			respond(res, req, 500, ERROR.INTERNAL_ERROR);
 		}
@@ -110,6 +110,8 @@ route.get("/user", async (req: any, res: any, next) => {
 				select: { user: true },
 			});
 			user = user.user;
+
+			console.log("user", user);
 
 			user
 				? respond(res, req, 200, "Fetched user details successfully", {
