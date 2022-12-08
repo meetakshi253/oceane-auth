@@ -32,7 +32,8 @@ model Image {
   metadata  Json
   location  String
   createdAt DateTime      @default(now()) //upload time
-  fileName  String
+  fileName   String
+  tag       String?
   albums    AlbumImages[]
 }
 
@@ -41,7 +42,7 @@ model Album {
   userId    String
   name      String
   createdAt DateTime      @default(now())
-  cover     String //s3 url
+  cover     String //cover picture name
   images    AlbumImages[]
 }
 
