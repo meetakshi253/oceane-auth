@@ -9,11 +9,14 @@ datasource db {
 }
 
 model User {
-  id      String      @id @default(uuid())
-  email   String      @unique
-  name    String
-  picture String?
-  tokens  JwtTokens[]
+  id           String        @id @default(uuid())
+  email        String        @unique
+  name         String
+  picture      String?
+  tokens       JwtTokens[]
+  sharedAlbums AlbumShares[]
+
+  @@index([email])
 }
 
 model JwtTokens {
@@ -31,19 +34,20 @@ model Image {
   name      String
   metadata  Json
   location  String
-  createdAt DateTime @default(now()) //upload time
-  fileName   String
+  createdAt DateTime      @default(now()) //upload time
+  fileName  String
   tag       String?
   albums    AlbumImages[]
 }
 
 model Album {
-  id        String        @id @unique @default(uuid())
-  userId    String
-  name      String
-  createdAt DateTime      @default(now())
-  cover     String //cover picture name
-  images    AlbumImages[]
+  id         String        @id @unique @default(uuid())
+  userId     String
+  name       String
+  createdAt  DateTime      @default(now())
+  cover      String //cover picture name
+  images     AlbumImages[]
+  sharedWith AlbumShares[]
 }
 
 model AlbumImages {
@@ -55,4 +59,15 @@ model AlbumImages {
   @@id([albumId, imageId]) //composite primary key
   @@index([albumId])
   @@index([imageId])
+}
+
+model AlbumShares {
+  albumId String
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, albumId])
+  @@index([albumId])
+  @@index([userId])
 }

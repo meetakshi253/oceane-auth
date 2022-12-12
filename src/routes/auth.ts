@@ -48,7 +48,6 @@ route.post("/login", async (req: any, res: any, next) => {
 					jwttoken,
 					process.env.JWT_SECRET,
 					function (err: any, decoded: any) {
-						console.log("decoded", decoded);
 						if (err) {
 							jwttoken = createJwt(token.userId);
 							prisma.jwtTokens.update({
@@ -97,8 +96,8 @@ route.post("/login", async (req: any, res: any, next) => {
 	}
 });
 
-route.get("/user", authMiddleware, async (req: any, res: any, next) => {
 
+route.get("/user", authMiddleware, async (req: any, res: any, next) => {
 		//fetch user from database corresponding to the token
 		let user: any;
 		try {
