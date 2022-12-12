@@ -5,6 +5,7 @@ import { respond } from "../lib/request-response";
 import * as ERROR from "../lib/errors";
 import jwt_decode from "jwt-decode";
 import { GoogleJWT } from "../types";
+import authMiddleware from "../lib/authMiddleware";
 
 const route = express();
 var jwt = require("jsonwebtoken");
@@ -96,36 +97,27 @@ route.post("/login", async (req: any, res: any, next) => {
 	}
 });
 
-route.get("/user", async (req: any, res: any, next) => {
-	const bearer_header = req.headers["authorization"];
-	if (typeof bearer_header !== undefined) {
-		const bearer_token = bearer_header.split(" ")[1];
-		req.token = bearer_token;
+route.get("/user", authMiddleware, async (req: any, res: any, next) => {
 
 		//fetch user from database corresponding to the token
 		let user: any;
 		try {
-			user = await prisma.jwtTokens.findFirst({
-				where: { token: bearer_token },
-				select: { user: true },
+			user = await prisma.user.findFirst({
+				where: { id: req.user },
 			});
-			user = user.user;
-
-			console.log("user", user);
 
 			user
 				? respond(res, req, 200, "Fetched user details successfully", {
-						username: user.name,
+						id: user.id,
+						name: user.name,
 						email: user.email,
 						picture: user.picture,
 				  })
 				: respond(res, req, 400, ERROR.BAD_REQUEST);
 		} catch (err) {
+			console.log(err)
 			respond(res, req, 500, ERROR.INTERNAL_ERROR);
 		}
-	} else {
-		respond(res, req, 400, ERROR.BAD_REQUEST);
-	}
 });
 
 export default route;

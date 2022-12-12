@@ -31,7 +31,7 @@ model Image {
   name      String
   metadata  Json
   location  String
-  createdAt DateTime      @default(now()) //upload time
+  createdAt DateTime @default(now()) //upload time
   fileName   String
   tag       String?
   albums    AlbumImages[]
