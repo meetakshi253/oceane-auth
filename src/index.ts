@@ -7,6 +7,8 @@ import cors from "cors";
 
 const app = express();
 
+const port = process.env.PORT || "8080";
+
 //app.set("trust proxy", true);
 
 app.use(cors());
