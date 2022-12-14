@@ -23,7 +23,6 @@ COPY . .
 
 RUN npm install && npm install -g typescript
 
-
 RUN npx prisma generate
 
 FROM debian:bullseye
